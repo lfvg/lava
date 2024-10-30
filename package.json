@@ -1,0 +1,22 @@
+{
+  "name": "vlama",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && electron .",
+    "preview": "vite preview",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "vue": "^3.5.12",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "electron": "^33.0.2",
+    "vite": "^5.4.10"
+  }
+}
