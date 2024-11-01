@@ -46,9 +46,12 @@ const createWindow = () => {
 
   // General functions
 
+  /*
+   * HTTP communication with Ollama, this can't run on the renderer thread
+   */
   const callLLM = async (query) => {
     var querySuccess = true;
-    
+
     const response = await axios.post("http://localhost:11434/api/generate", {
       model: "llama3.2",
       prompt: query
@@ -62,7 +65,7 @@ const createWindow = () => {
       const stream = response.data
       stream.on('data', data => {
         data = data.toString()
-        //TODO send back to renderer thread
+        mainWindow.webContents.send("ollama-response", data)
       })
     }
   }
