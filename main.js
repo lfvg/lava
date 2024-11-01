@@ -1,19 +1,38 @@
 import { app, BrowserWindow } from 'electron';
-// include the Node.js 'path' module at the top of your file
+import path from 'node:path';
+import { fileURLToPath } from 'url';
+
+// circuvent the absence of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+var mainWindow;
+
+// Electron functions
+
+// Create the mainWindow
 const createWindow = () => {
-    const win = new BrowserWindow({
+    mainWindow = new BrowserWindow({
       width: 800,
       height: 600,
-      
+      webPreferences: {
+        preload: path.join(__dirname, 'preload.js')
+      }
     })
-    win.loadFile('dist/index.html')
+    mainWindow.loadFile('dist/index.html')
   }
+
+  // Electron lifecycle
+
+  // Create Window
   app.whenReady().then(() => {
     createWindow()
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
       })
   })
+
+  // End program logic
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
   })
