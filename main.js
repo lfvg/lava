@@ -21,6 +21,10 @@ const createWindow = () => {
       }
     })
     mainWindow.loadFile('dist/index.html')
+    // Calls a function in Vue that forces a router change
+    mainWindow.webContents.on('did-finish-load', function () {
+      mainWindow.webContents.send("push-router", "home")
+    })
   }
 
   // Electron lifecycle
@@ -30,7 +34,8 @@ const createWindow = () => {
     createWindow()
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
-      })
+    })
+    
   })
 
   // End program logic
