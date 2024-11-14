@@ -5,7 +5,8 @@ export default {
   
   data () {
     return {
-      items: [{ message: 'Foo' }, { message: 'Bar' }]
+      chatHistory: [{ message: 'Foo' }, { message: 'Bar' }],
+      queryText: "Esse é um teste"
     }
   },
   mounted() {
@@ -13,13 +14,24 @@ export default {
       console.log(route)
       this.$router.push('/')
     })
+  },
+  methods: {
+    makeQuery() {
+      //window.electronAPI.queryOllama("")
+      alert(this.queryText);
+      console.log(this.queryText);
+    },
+    updateQuery(value) {
+      console.log('update', value);
+      this.queryText = value;
+    }
   }
 }
 </script>
 
 <template style="height: 100%">
   <RouterView v-slot="{ Component }" >
-    <component :is="Component" :chatHistory="items"/>
+    <component :is="Component" :chatHistory="chatHistory" :queryText="queryText" @submit-query="makeQuery" @update-query-text="updateQuery"/>
   </RouterView>
 </template>
 

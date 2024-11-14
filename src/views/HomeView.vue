@@ -1,9 +1,9 @@
 <script>
 export default {
-  props: ['chatHistory'],
+  props: ['chatHistory', 'queryText'],
   data () {
     return {
-      queryText: ""
+      
     }
   },
   computed: {
@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     makeQuery() {
-      window.electronAPI.queryOllama("")
+     
     }
   }
 
@@ -80,7 +80,10 @@ export default {
             <v-col sm="1" md="1"/>
             <v-col>
               <v-textarea no-resize="true" variant="solo-filled" placeholder="Mensagem Llama" 
-                          :rows="textareaRows" v-model="queryText" append-inner-icon="mdi-send"/>
+                          :rows="textareaRows" v-bind:model-value="queryText" 
+                          v-on:update:model-value="(event) => $emit('update-query-text', event)"  
+                          append-inner-icon="mdi-send"
+                          @click:append-inner="$emit('submit-query')"/>
             </v-col>
             <v-col sm="1" md="1"/>
           </v-row>
