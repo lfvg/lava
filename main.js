@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, Tray, globalShortcut } from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
@@ -8,7 +8,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 var mainWindow;
-
+var quickWindow = null;
+var tray;
 // Electron functions
 
 // Create the mainWindow
@@ -26,12 +27,28 @@ const createWindow = () => {
       mainWindow.webContents.send("push-router", "home")
     })
   }
-
+const createTray = () => {
+  tray = new Tray('./src/assets/brain.ico')
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Close', type: 'normal', click: () => {
+      app.quit()
+    }}
+  ])
+  tray.setToolTip('Lava.')
+  tray.setContextMenu(contextMenu)
+  tray.addListener("click", () => {
+    tray.popUpContextMenu()
+  })
+}
   // Electron lifecycle
 
   // Create Window
   app.whenReady().then(() => {
+    globalShortcut.register('Alt+CommandOrControl+I', () => {
+      handleQuickPage()
+    })
     createWindow()
+    createTray()
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
@@ -40,7 +57,7 @@ const createWindow = () => {
 
   // End program logic
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') app.quit()
+    //if (process.platform !== 'darwin') app.quit()
   })
 
   // Inter proccess communication
@@ -51,6 +68,35 @@ const createWindow = () => {
 
   // General functions
 
+
+  const handleQuickPage = () => {
+    console.log("chegou 1")
+    if(quickWindow === null) {
+      quickWindow = new BrowserWindow({
+        width: 800,
+        height: 96,
+        frame: false,
+        frame: false,
+        transparent: true,
+        resizable: false,
+        webPreferences: {
+          preload: path.join(__dirname, 'preload.js')
+        }
+      })
+      quickWindow.loadFile('dist/index.html')
+       // Calls a function in Vue that forces a router change
+      quickWindow.webContents.on('did-finish-load', function () {
+        quickWindow.webContents.send("push-router", "quick")
+      })
+      quickWindow.on('blur', () => {
+        quickWindow.close()
+        quickWindow = null
+      })
+    }
+    else {
+
+    }
+  }
   /*
    * HTTP communication with Ollama, this can't run on the renderer thread
    */

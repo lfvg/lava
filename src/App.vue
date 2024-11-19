@@ -11,8 +11,9 @@ export default {
   },
   mounted() {
     window.electronAPI.pushRouter((route) => {
-      console.log(route)
-      this.$router.push('/')
+      route === 'home' ?
+      this.$router.push('/') :
+      this.$router.push('/quick')
     })
   },
   methods: {
@@ -29,7 +30,7 @@ export default {
 }
 </script>
 
-<template style="height: 100%">
+<template>
   <RouterView v-slot="{ Component }" >
     <component :is="Component" :chatHistory="chatHistory" :queryText="queryText" @submit-query="makeQuery" @update-query-text="updateQuery"/>
   </RouterView>
