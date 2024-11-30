@@ -28,7 +28,7 @@ const createWindow = () => {
     })
   }
 const createTray = () => {
-  tray = new Tray('./src/assets/brain.ico')
+  tray = new Tray('src/assets/brain.ico')
   const contextMenu = Menu.buildFromTemplate([
     { label: 'Close', type: 'normal', click: () => {
       app.quit()
@@ -44,7 +44,7 @@ const createTray = () => {
 
   // Create Window
   app.whenReady().then(() => {
-    globalShortcut.register('Alt+CommandOrControl+I', () => {
+    globalShortcut.register('Control+Space', () => {
       handleQuickPage()
     })
     createWindow()
@@ -70,12 +70,10 @@ const createTray = () => {
 
 
   const handleQuickPage = () => {
-    console.log("chegou 1")
     if(quickWindow === null) {
       quickWindow = new BrowserWindow({
         width: 800,
         height: 96,
-        frame: false,
         frame: false,
         transparent: true,
         resizable: false,
