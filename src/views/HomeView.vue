@@ -1,5 +1,9 @@
 <script>
+import VueMarkdown from 'vue-markdown-render'
 export default {
+  components: {
+    VueMarkdown
+  },
   props: ['chatHistory', 'queryText', 'responding'],
   data() {
     return {
@@ -81,7 +85,9 @@ export default {
                   </v-html>
                 </v-card-text>
               </v-card>
-              <div v-else>{{ message.text }}</div>
+              <div v-else>
+                <vue-markdown :source="message.text" />
+              </div>
             </v-sheet>
           </v-col>
           <v-col sm="1" md="1" />
