@@ -76,17 +76,17 @@ export default {
           <v-col sm="1" md="1" />
           <v-col>
             <v-sheet style="background: inherit; color: inherit; width: 100%; margin-bottom: 12px;"
-              v-for="message in chatHistory">
-              <v-card v-if="message.type === 'question'" variant="tonal" style="width: fit-content; justify-self: end;"
-                elevation="3">
+              v-for="message in chatHistory.messages">
+              <v-card v-if="message.role === 'user'" variant="tonal" style="width: fit-content; justify-self: end;"
+                elevation="1">
                 <v-card-text>
                   <v-html>
-                  {{ message.text }}
+                  {{ message.content }}
                   </v-html>
                 </v-card-text>
               </v-card>
               <div v-else>
-                <vue-markdown :source="message.text" />
+                <vue-markdown :source="message.content" />
               </div>
             </v-sheet>
           </v-col>

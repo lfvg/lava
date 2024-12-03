@@ -5,7 +5,10 @@ export default {
 
   data() {
     return {
-      chatHistory: [],
+      chatHistory: {
+        name: '',
+        messages: []
+      },
       queryText: "",
       responding: false,
       finishQuery: true
@@ -19,29 +22,33 @@ export default {
     }),
       window.electronAPI.pushOllamaResponse((data) => {
         const parsedData = JSON.parse(data);
-        this.chatHistory[this.chatHistory.length - 1].text += parsedData.response;
         if (parsedData.done) {
           this.responding = false;
+          let sChatHisotry = JSON.stringify(this.chatHistory);
+          window.electronAPI.saveChat(sChatHisotry)
         }
+        else
+          this.chatHistory.messages[this.chatHistory.messages.length - 1].content += parsedData.message.content;
+        
       })
   },
   computed: {
-    formatedQueryText: function() {
-      return this.queryText.replace("\n", "<br/>");
-    }
+   
   },
   methods: {
     makeQuery() {
       this.responding = true;
-      this.chatHistory.push({
-        type: 'question',
-        text: this.formatedQueryText
-      })
-      this.chatHistory.push({
-        type: 'response',
-        text: ''
-      })
-      window.electronAPI.queryOllama(this.queryText)
+      this.chatHistory.messages.push({
+        role: 'user',
+        content: this.queryText
+      });
+      let query = JSON.stringify(this.chatHistory.messages);
+      this.chatHistory.messages.push({
+        role: 'assistant',
+        content: ''
+      });
+      
+      window.electronAPI.queryOllama(query)
 
       this.queryText = '';
     },

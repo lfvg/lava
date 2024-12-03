@@ -66,6 +66,13 @@ const createTray = () => {
     callLLM(query)
   })
 
+  ipcMain.on('save-chat', (event, sChatHistory) => {
+    var chatHistory = JSON.parse(sChatHistory);
+    if(chatHistory.name === '') {
+      chatHistory.name = chatHistory.messages[0].content;
+    }
+    console.log(chatHistory);
+  })
   // General functions
 
 
@@ -100,10 +107,10 @@ const createTray = () => {
    */
   const callLLM = async (query) => {
     var querySuccess = true;
-
-    const response = await axios.post("http://localhost:11434/api/generate", {
+    let messages = JSON.parse(query);
+    const response = await axios.post("http://localhost:11434/api/chat", {
       model: "llama3.2",
-      prompt: query
+      messages: messages
     }, {
       responseType: 'stream'
     }).catch(function (error){
