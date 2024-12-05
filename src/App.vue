@@ -52,6 +52,19 @@ export default {
 
       this.queryText = '';
     },
+    makeQuickQuery() {
+      this.responding = true;
+      this.chatHistory.messages.push({
+        role: 'user',
+        content: this.queryText
+      });
+      let query = JSON.stringify(this.chatHistory.messages);
+      this.chatHistory.messages.push({
+        role: 'assistant',
+        content: ''
+      });
+      window.electronAPI.quickQueryOllama(query)
+    },
     updateQuery(value) {
       this.queryText = value;
     },
@@ -65,7 +78,8 @@ export default {
 <template>
   <RouterView v-slot="{ Component }">
     <component :is="Component" :chatHistory="chatHistory" :queryText="queryText" :responding="responding"
-      @submit-query="makeQuery" @update-query-text="updateQuery" @update-query-text-with-enter="updateQueryWithEnter" />
+      @submit-query="makeQuery" @update-query-text="updateQuery" @update-query-text-with-enter="updateQueryWithEnter" 
+      @submit-quick-query="makeQuickQuery"/>
   </RouterView>
 </template>
 

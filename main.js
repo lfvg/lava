@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, Tray, globalShortcut } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, Tray, globalShortcut, screen } from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 var mainWindow;
 var quickWindow = null;
 var tray;
+var abortController = null
 // Electron functions
 
 // Create the mainWindow
@@ -71,22 +72,39 @@ const createTray = () => {
     if(chatHistory.name === '') {
       chatHistory.name = chatHistory.messages[0].content;
     }
-    console.log(chatHistory);
+    //console.log(chatHistory);
+  })
+
+  ipcMain.on('quick-query-ollama', (event, query) => {
+    quickCallLLM(query)
+    quickWindow.setBounds({ height: 528 })
   })
   // General functions
 
 
   const handleQuickPage = () => {
     if(quickWindow === null) {
+      //getCursorScreenPoint is broken on linux
+      const currentDisplay = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
+
+      const displayDimensions = currentDisplay.workAreaSize;
+
+      const monitorHeight = displayDimensions.height;
+      const monitorWidth = displayDimensions.width;
+      const quickViewWindowPositionY = Math.max(Math.round(monitorHeight/2)-200,0);
+      const quickViewWindowPositionX = Math.round(monitorWidth/2)-400; 
       quickWindow = new BrowserWindow({
         width: 800,
         height: 96,
+        y: quickViewWindowPositionY,
+        x: quickViewWindowPositionX,
         frame: false,
         transparent: true,
         resizable: false,
         webPreferences: {
           preload: path.join(__dirname, 'preload.js')
         }
+        
       })
       quickWindow.loadFile('dist/index.html')
        // Calls a function in Vue that forces a router change
@@ -94,6 +112,9 @@ const createTray = () => {
         quickWindow.webContents.send("push-router", "quick")
       })
       quickWindow.on('blur', () => {
+        if (abortController != null)
+          abortController.abort();
+        abortController = null;
         quickWindow.close()
         quickWindow = null
       })
@@ -122,6 +143,33 @@ const createTray = () => {
       stream.on('data', data => {
         data = data.toString()
         mainWindow.webContents.send("ollama-response", data)
+      })
+    }
+  }
+
+  const quickCallLLM = async (query) => {
+    var querySuccess = true;
+    let messages = JSON.parse(query);
+    abortController = new AbortController();
+
+    const response = await axios.post("http://localhost:11434/api/chat", {
+      model: "llama3.2",
+      messages: messages,
+    }, {
+      responseType: 'stream',
+      signal: abortController.signal,
+    }).catch(function (error){
+      querySuccess = false;
+    })
+
+    if(querySuccess) {
+      const stream = response.data
+      stream.on('data', data => {
+        data = data.toString()
+        //console.log(data);
+        if (quickWindow != null) {
+          quickWindow.webContents.send("ollama-response", data)
+        }
       })
     }
   }

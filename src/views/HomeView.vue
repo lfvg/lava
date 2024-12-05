@@ -98,9 +98,13 @@ export default {
             
             <v-textarea no-resize="true" solo filled placeholder="Mensagem Llama" :rows="textareaRows"
               v-bind:model-value="queryText" v-on:update:model-value="(event) => $emit('update-query-text', event)"
-              append-inner-icon="mdi-send" :disabled="responding" @click:append-inner="$emit('submit-query')"
+             :disabled="responding" @click:append-inner="$emit('submit-query')"
               @keydown.enter.exact.prevent="$emit('submit-query')"
-              @keydown.enter.shift.exact.prevent="() => $emit('update-query-text-with-enter')" />
+              @keydown.enter.shift.exact.prevent="() => $emit('update-query-text-with-enter')" >
+              <template v-slot:append-inner>
+                <v-icon style="align-self: center" icon="mdi-send" v-on:click="$emit('submit-query')"/>
+              </template>
+              </v-textarea>
             
           </v-col>
           <v-col sm="1" md="1" />
