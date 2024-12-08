@@ -19,6 +19,8 @@
   },
   "dependencies": {
     "axios": "^1.7.7",
+    "electron-storage": "^1.0.7",
+    "uuid": "^11.0.3",
     "electron": "^16.0.0",
     "electron-squirrel-startup": "^1.0.1",
     "vue": "^3.5.12",

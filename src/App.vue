@@ -7,6 +7,7 @@ export default {
     return {
       chatHistory: {
         name: '',
+        file: '',
         messages: []
       },
       queryText: "",
@@ -70,6 +71,9 @@ export default {
     },
     updateQueryWithEnter() {
       this.queryText = this.queryText + '\n';
+    },
+    onCloseQuickView() {
+      window.electronAPI.closeQuickView()
     }
   }
 }
@@ -79,8 +83,7 @@ export default {
   <RouterView v-slot="{ Component }">
     <component :is="Component" :chatHistory="chatHistory" :queryText="queryText" :responding="responding"
       @submit-query="makeQuery" @update-query-text="updateQuery" @update-query-text-with-enter="updateQueryWithEnter" 
-      @submit-quick-query="makeQuickQuery"/>
+      @submit-quick-query="makeQuickQuery" @close-quick-view="onCloseQuickView"/>
   </RouterView>
 </template>
-
 <style></style>

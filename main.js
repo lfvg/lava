@@ -3,6 +3,8 @@ import squirrelStartup from 'electron-squirrel-startup'
 import path from 'node:path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
+import {v4 as uuidv4} from 'uuid';
+import fs from 'fs';
 
 //Prevent app to start during Windows installation
 if (squirrelStartup) { app.quit();}
@@ -15,6 +17,8 @@ var mainWindow;
 var quickWindow = null;
 var tray;
 var abortController = null
+//TODO check for remove
+var savedHistory = [];
 // Electron functions
 
 // Create the mainWindow
@@ -75,15 +79,30 @@ const createTray = () => {
 
   ipcMain.on('save-chat', (event, sChatHistory) => {
     var chatHistory = JSON.parse(sChatHistory);
+    let fileName = chatHistory.file === '' ? uuidv4() : chatHistory.file;
     if(chatHistory.name === '') {
       chatHistory.name = chatHistory.messages[0].content;
     }
-    //console.log(chatHistory);
+    savedHistory.push({
+      name: chatHistory.name,
+      file: fileName
+    });
+    let savedHistoryString = JSON.stringify(savedHistory, null, 2);
+    fs.writeFile('./src/savedHistory', savedHistoryString, (err) => {
+      if (err) throw err;
+    console.log('Data written to file');
+    });
+    console.log('sucesso?');
   })
 
   ipcMain.on('quick-query-ollama', (event, query) => {
     quickCallLLM(query)
     quickWindow.setBounds({ height: 528 })
+  })
+
+  ipcMain.on('close-quick-view', () => {
+    quickWindow.close();
+    quickWindow = null;
   })
   // General functions
 
@@ -126,7 +145,8 @@ const createTray = () => {
       })
     }
     else {
-
+      quickWindow.close();
+      quickWindow = null;
     }
   }
   /*

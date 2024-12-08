@@ -26,7 +26,7 @@ export default {
 
 <template>
   <v-container style="height: 96px; border-radius: 5px; background: var(--color-background);">
-    <v-textarea filled flat :no-resize="true" 
+    <v-textarea filled flat :no-resize="true" autofocus
                 placeholder="Mensagem Llama" 
                 append-inner-icon="mdi-send" 
                 rows="1" :disabled="responding"
