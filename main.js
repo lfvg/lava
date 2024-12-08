@@ -1,7 +1,11 @@
 import { app, BrowserWindow, ipcMain, Menu, Tray, globalShortcut, screen } from 'electron';
+import squirrelStartup from 'electron-squirrel-startup'
 import path from 'node:path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
+
+//Prevent app to start during Windows installation
+if (squirrelStartup) { app.quit();}
 
 // circuvent the absence of __dirname
 const __filename = fileURLToPath(import.meta.url);
