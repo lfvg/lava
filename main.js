@@ -1,13 +1,21 @@
-import { app, BrowserWindow, ipcMain, Menu, Tray, globalShortcut, screen } from 'electron';
+//Prevent app to start during Windows installation
 import squirrelStartup from 'electron-squirrel-startup'
+if (squirrelStartup) { app.quit();}
+
+import { app, BrowserWindow, ipcMain, Menu, Tray, globalShortcut, screen } from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
 import {v4 as uuidv4} from 'uuid';
-import fs from 'fs';
 
-//Prevent app to start during Windows installation
-if (squirrelStartup) { app.quit();}
+//Set empty menu, prevent access to developer tools
+Menu.setApplicationMenu(new Menu);
+
+//App auto launch configuration
+app.setLoginItemSettings({
+  openAtLogin: true,
+
+});
 
 // circuvent the absence of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -28,6 +36,7 @@ const createWindow = () => {
       height: 600,
       title: "Lava",
       autoHideMenuBar: true,
+      icon: path.join(__dirname, 'src', 'assets', 'dmg-background.png'),
       webPreferences: {
         preload: path.join(__dirname, 'preload.js')
       }
@@ -39,13 +48,13 @@ const createWindow = () => {
     })
   }
 const createTray = () => {
-  tray = new Tray('src/assets/brain.ico')
+  tray = new Tray( path.join(__dirname, 'src', 'assets', 'brain.ico'))
   const contextMenu = Menu.buildFromTemplate([
     { label: 'Close', type: 'normal', click: () => {
       app.quit()
     }}
   ])
-  tray.setToolTip('Lava.')
+  tray.setToolTip('Lava')
   tray.setContextMenu(contextMenu)
   tray.addListener("click", () => {
     tray.popUpContextMenu()
@@ -78,21 +87,7 @@ const createTray = () => {
   })
 
   ipcMain.on('save-chat', (event, sChatHistory) => {
-    var chatHistory = JSON.parse(sChatHistory);
-    let fileName = chatHistory.file === '' ? uuidv4() : chatHistory.file;
-    if(chatHistory.name === '') {
-      chatHistory.name = chatHistory.messages[0].content;
-    }
-    savedHistory.push({
-      name: chatHistory.name,
-      file: fileName
-    });
-    let savedHistoryString = JSON.stringify(savedHistory, null, 2);
-    fs.writeFile('./src/savedHistory', savedHistoryString, (err) => {
-      if (err) throw err;
-    console.log('Data written to file');
-    });
-    console.log('sucesso?');
+    
   })
 
   ipcMain.on('quick-query-ollama', (event, query) => {

@@ -5,6 +5,15 @@ export default {
     VueMarkdown
   },
   props: ['chatHistory', 'queryText', 'responding'],
+  data() {
+    return {
+      bottonResponse: null,
+      options: {
+        duration: 300,
+        easing: 'easeInOutCubic'
+      }
+     }
+  },
   computed : {
     showResponse: function () { 
       if(this.chatHistory.messages.length === 0) return false;
@@ -19,6 +28,18 @@ export default {
       if(this.chatHistory.messages.length < 2) return '';
       let messagesCount = this.chatHistory.messages.length;
       return this.chatHistory.messages[messagesCount -1].content;
+    }
+  },
+  watch: {
+    chatResponse() {
+      this.$nextTick(() => {
+        this.goTo(this.bottonResponse.$el);
+      })
+    }
+  },
+  methods: {
+    copyResponse() {
+      navigator.clipboard.writeText(this.chatResponse);
     }
   }
 }
@@ -37,9 +58,18 @@ export default {
 
     </v-textarea>
   </v-container>
-  <v-sheet v-if="showResponse" style="margin-top: 32px; height: fit-content; max-height: 400px; overflow: scroll; border-radius: 5px; background: var(--color-background); color: var(--color-text); padding: 32px;">
-       <vue-markdown :source="chatResponse" /> 
-    </v-sheet>
+  <v-hover close-delay="200">
+    <template v-slot:default="{ isHovering, props }">
+        <v-sheet ref="scrollContainer" v-bind="props" v-if="showResponse" style="margin-top: 32px; height: fit-content; max-height: 400px; overflow: scroll; border-radius: 5px; background: var(--color-background); color: var(--color-text); padding: 32px;">
+          <v-btn v-show="isHovering" @click="copyResponse"  icon flat density="comfortable" size="small" color="var(--color-background)" active-color="var(--color-background)" style="position: absolute; top: 136px; right: 8px;">
+            <v-icon color="var(--color-text)">mdi-content-copy</v-icon>
+          </v-btn>
+          <vue-markdown :source="chatResponse" />
+          <div :ref="instance => bottonResponse = instance"></div>
+        </v-sheet>
+   
+    </template>
+  </v-hover>
 </template>
 
 <style>
