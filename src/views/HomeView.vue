@@ -11,6 +11,10 @@ export default {
       miniVariant: true,
       clipped: true,
       permanent: false,
+      copyText: 'Copiar resposta',
+      sidebarCloseText: 'Fechar a barra lateral',
+      sidebarOpenText: 'Abrir a barra lateral',
+      newChatText: 'Novo chat'
     }
   },
   computed: {
@@ -63,10 +67,10 @@ export default {
     makeQuery() {
 
     },
-    changeSidePanel(){
-      
-       this.miniVariant = !this.miniVariant;
-       this.permanent = !this.permanent;
+    changeSidePanel() {
+
+      this.miniVariant = !this.miniVariant;
+      this.permanent = !this.permanent;
     },
     copyResponse(message) {
       navigator.clipboard.writeText(message);
@@ -94,34 +98,39 @@ export default {
 <template style="height: 100vh">
   <v-app style="color: var(--color-text); background: var(--color-background-soft);">
     <v-toolbar dense flat color="var(--color-text)" style="color: inherit; background: var(--color-background-soft);">
+
       <v-btn v-if="miniVariant" elevation="0" icon @click="changeSidePanel" style="border-radius: 8px;">
         <v-icon>mdi-dock-left</v-icon>
+        <v-tooltip activator="parent" location="bottom">{{ sidebarOpenText }}</v-tooltip>
       </v-btn>
       <div style="width: 16px;"></div>
       <v-btn v-if="miniVariant" elevation="0" icon @click="changeSidePanel" style="border-radius: 8px;">
         <v-icon color="var(--color-text)">mdi-square-edit-outline</v-icon>
+        <v-tooltip activator="parent" location="bottom">{{ newChatText }}</v-tooltip>
       </v-btn>
     </v-toolbar>
-    <v-navigation-drawer
-                         :mini-variant.sync="miniVariant" 
-                         :clipped="clipped"
-                         app 
-                         :permanent="permanent"
-                         style="color: inherit; background: var(--color-background);">
+    <v-navigation-drawer :mini-variant.sync="miniVariant" :clipped="clipped" app :permanent="permanent"
+      style="color: inherit; background: var(--color-background);">
       <v-list>
         <v-list-item class="px-2">
           <v-row justify="space-between" style="margin: 0px;">
-          <v-list-item-avatar>
-            <v-btn elevation="0" icon @click="changeSidePanel" style="color: inherit; background: var(--color-background); border-radius: 8px;">
-              <v-icon color="var(--color-text)">mdi-dock-left</v-icon>
-            </v-btn>
-          </v-list-item-avatar>
-          <v-list-item-avatar>
-            <v-btn elevation="0" icon @click="changeSidePanel" style="color: inherit; background: var(--color-background); border-radius: 8px;">
-              <v-icon color="var(--color-text)">mdi-square-edit-outline</v-icon>
-            </v-btn>
-          </v-list-item-avatar>
-        </v-row>
+            <v-list-item-avatar>
+              <v-btn elevation="0" icon @click="changeSidePanel"
+                style="color: inherit; background: var(--color-background); border-radius: 8px;">
+                <v-icon color="var(--color-text)">mdi-dock-left</v-icon>
+                <v-tooltip activator="parent" location="bottom">
+                  {{ sidebarCloseText }}
+                </v-tooltip>
+              </v-btn>
+            </v-list-item-avatar>
+            <v-list-item-avatar>
+              <v-btn elevation="0" icon @click="changeSidePanel"
+                style="color: inherit; background: var(--color-background); border-radius: 8px;">
+                <v-icon color="var(--color-text)">mdi-square-edit-outline</v-icon>
+                <v-tooltip activator="parent" location="bottom">{{ newChatText }}</v-tooltip>
+              </v-btn>
+            </v-list-item-avatar>
+          </v-row>
         </v-list-item>
         <v-list-item style="color: var(--color-text);">
           Item 2
@@ -138,7 +147,7 @@ export default {
             <v-row :style="textAreaStyle">
               <v-col sm="1" md="1" />
               <v-col>
-                <v-sheet style="background: inherit; color: inherit; width: 100%; margin-bottom: 12px;"
+                <v-sheet style="background: inherit; color: inherit; width: 100%;"
                   v-for="message in chatHistory.messages">
                   <v-card v-if="message.role === 'user'" variant="tonal" style="width: fit-content; justify-self: end;"
                     elevation="1">
@@ -152,13 +161,19 @@ export default {
                     <v-hover close-delay="200">
                       <template v-slot:default="{ isHovering, props }">
                         <div v-bind="props">
-                        <vue-markdown :source="message.content" />
-                        <v-btn v-show="isHovering" @click="copyResponse(message.content)" icon flat 
-                               density="comfortable" size="small" color="var(--color-background-soft)" 
-                               active-color="var(--color-background)">
-                          <v-icon color="var(--color-text)">mdi-content-copy</v-icon>
-                        </v-btn>
-                      </div>
+                          <vue-markdown :source="message.content" />
+                          <div style="min-height: 48px;">
+                            <v-btn v-show="isHovering" @click="copyResponse(message.content)" icon flat
+                              density="comfortable" size="small" color="var(--color-background-soft)"
+                              active-color="var(--color-background)">
+                              <v-icon color="var(--color-text)">mdi-content-copy</v-icon>
+                              <v-tooltip
+        activator="parent"
+        location="end"
+        >{{copyText}}</v-tooltip>
+                            </v-btn>
+                          </div>
+                        </div>
                       </template>
                     </v-hover>
                   </div>
@@ -204,12 +219,13 @@ body {
 
 
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
 body {
   background: black;
-  overflow: hidden; 
+  overflow: hidden;
 }
 </style>

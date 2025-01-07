@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'url';
 import axios from 'axios';
 import {v4 as uuidv4} from 'uuid';
+import  storage  from 'electron-json-storage';
 
 //Set empty menu, prevent access to developer tools
 Menu.setApplicationMenu(new Menu);
@@ -14,7 +15,6 @@ Menu.setApplicationMenu(new Menu);
 //App auto launch configuration
 app.setLoginItemSettings({
   openAtLogin: true,
-
 });
 
 // circuvent the absence of __dirname
@@ -25,8 +25,26 @@ var mainWindow;
 var quickWindow = null;
 var tray;
 var abortController = null
+var savedHistory= {}
 //TODO check for remove
-var savedHistory = [];
+storage.has('chat_history', function(erro, haskey){
+  if(haskey){
+    console.log('has key');
+    storage.get('chat_history', function(error, data) {
+      if(error) throw error;
+      savedHistory = data;
+      console.log('data read', savedHistory);
+    });
+  }
+  else {
+  console.log('no key');
+  savedHistory = {
+    categories: [],
+    chats: []
+  }
+}
+});
+
 // Electron functions
 
 // Create the mainWindow
@@ -36,7 +54,7 @@ const createWindow = () => {
       height: 600,
       title: "Lava",
       autoHideMenuBar: true,
-      icon: path.join(__dirname, 'src', 'assets', 'dmg-background.png'),
+      icon: path.join(__dirname, 'src', 'assets', 'brain.ico'),
       webPreferences: {
         preload: path.join(__dirname, 'preload.js')
       }
@@ -87,7 +105,13 @@ const createTray = () => {
   })
 
   ipcMain.on('save-chat', (event, sChatHistory) => {
-    
+    storage.set('chat_history', savedHistory, function(error){
+      if(error){
+        console.log(error);
+        throw error;
+      }
+      console.log('saved');
+    })
   })
 
   ipcMain.on('quick-query-ollama', (event, query) => {
