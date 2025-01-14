@@ -10,7 +10,11 @@ export default {
   packagerConfig: {
     name: "Lava",
     icon: path.join(__dirname, 'src', 'assets', 'volcano'),//'/src/assets/volcano',
+    extraResource: [
+      path.join(__dirname, 'src', 'assets', 'volcano.icns'),
+    ],
     asar: true,
+    osxSign: false,
   },
   rebuildConfig: {
     force: true
@@ -25,13 +29,15 @@ export default {
     },
     {
       name: '@electron-forge/maker-zip',  //macOS
+      icon: path.join(__dirname, 'src', 'assets', 'volcano.icns'), 
       platforms: ['darwin'],
     },
     {
       name: '@electron-forge/maker-dmg',  //macOs
+      icon: path.join(__dirname, 'src', 'assets', 'volcano.icns'),
       config: {
-        background: './src/assets/volcano.png',
-        icon: './src/assets/volcano.icns',
+        background: './src/assets/background.png',
+        icon: path.join(__dirname, 'src', 'assets', 'volcano.png'),
         format: 'ULFO',
       }
     },
@@ -42,7 +48,7 @@ export default {
         description: "A chat application using Llama3.2.",
         productDescription: "Lava is a chat application that utilizes the Llama3.2 model for intelligent conversations.",
         options: {
-          icon: './src/assets/volcano.png'
+          icon: path.join(__dirname, 'src', 'assets', 'volcano.png')
         }
       },
     },

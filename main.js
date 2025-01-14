@@ -54,7 +54,7 @@ const createWindow = () => {
       height: 600,
       title: "Lava",
       autoHideMenuBar: true,
-      icon: path.join(__dirname, 'src', 'assets', 'brain.ico'),
+      icon: path.join(__dirname, 'src', 'assets', 'volcano.png'),
       webPreferences: {
         preload: path.join(__dirname, 'preload.js')
       }
@@ -66,7 +66,7 @@ const createWindow = () => {
     })
   }
 const createTray = () => {
-  tray = new Tray( path.join(__dirname, 'src', 'assets', 'brain.ico'))
+  tray = new Tray( path.join(__dirname, 'src', 'assets', 'svolcano.png'))
   const contextMenu = Menu.buildFromTemplate([
     { label: 'Close', type: 'normal', click: () => {
       app.quit()

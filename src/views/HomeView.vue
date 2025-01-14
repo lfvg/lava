@@ -147,14 +147,12 @@ export default {
             <v-row :style="textAreaStyle">
               <v-col sm="1" md="1" />
               <v-col>
-                <v-sheet style="background: inherit; color: inherit; width: 100%;"
+                <v-sheet style="background: inherit; color: inherit; width: 100%; margin-bottom: 6px;"
                   v-for="message in chatHistory.messages">
                   <v-card v-if="message.role === 'user'" variant="tonal" style="width: fit-content; justify-self: end;"
                     elevation="1">
                     <v-card-text>
-                      <v-html>
-                        {{ message.content }}
-                      </v-html>
+                      <vue-markdown :source="message.content" />
                     </v-card-text>
                   </v-card>
                   <div v-else>
@@ -163,7 +161,7 @@ export default {
                         <div v-bind="props">
                           <vue-markdown :source="message.content" />
                           <div style="min-height: 48px;">
-                            <v-btn v-show="isHovering" @click="copyResponse(message.content)" icon flat
+                            <v-btn v-if="!responding" v-show="isHovering" @click="copyResponse(message.content)" icon flat
                               density="comfortable" size="small" color="var(--color-background-soft)"
                               active-color="var(--color-background)">
                               <v-icon color="var(--color-text)">mdi-content-copy</v-icon>
