@@ -1,10 +1,15 @@
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import path from 'node:path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default {
   name: "@electron-forge/maker-deb",
   packagerConfig: {
     name: "Lava",
+    icon: path.join(__dirname, 'src', 'assets', 'volcano'),//'/src/assets/volcano',
     asar: true,
   },
   rebuildConfig: {
@@ -15,6 +20,7 @@ export default {
       name: '@electron-forge/maker-squirrel',  //Windows
       config: {
         name: 'Lava',
+        setupIcon: path.join(__dirname, 'src', 'assets', 'volcano.ico'),
       },
     },
     {
@@ -24,8 +30,8 @@ export default {
     {
       name: '@electron-forge/maker-dmg',  //macOs
       config: {
-        background: './src/assets/dmg-background.png',
-        icon: './src/assets/icon.icns',
+        background: './src/assets/volcano.png',
+        icon: './src/assets/volcano.icns',
         format: 'ULFO',
       }
     },
@@ -34,7 +40,10 @@ export default {
       platforms: ['linux'],
       config: {
         description: "A chat application using Llama3.2.",
-        productDescription: "Lava is a chat application that utilizes the Llama3.2 model for intelligent conversations."
+        productDescription: "Lava is a chat application that utilizes the Llama3.2 model for intelligent conversations.",
+        options: {
+          icon: './src/assets/volcano.png'
+        }
       },
     },
     {
