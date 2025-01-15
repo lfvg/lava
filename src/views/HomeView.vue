@@ -5,7 +5,7 @@ export default {
   components: {
     VueMarkdown
   },
-  props: ['chatHistory', 'queryText', 'responding'],
+  props: ['chatHistory', 'queryText', 'responding', 'currentChat'],
   data() {
     return {
       miniVariant: true,
@@ -104,7 +104,7 @@ export default {
         <v-tooltip activator="parent" location="bottom">{{ sidebarOpenText }}</v-tooltip>
       </v-btn>
       <div style="width: 16px;"></div>
-      <v-btn v-if="miniVariant" elevation="0" icon @click="changeSidePanel" style="border-radius: 8px;">
+      <v-btn v-if="miniVariant" elevation="0" icon @click="$emit('create-new-chat')" style="border-radius: 8px;">
         <v-icon color="var(--color-text)">mdi-square-edit-outline</v-icon>
         <v-tooltip activator="parent" location="bottom">{{ newChatText }}</v-tooltip>
       </v-btn>
@@ -124,7 +124,7 @@ export default {
               </v-btn>
             </v-list-item-avatar>
             <v-list-item-avatar>
-              <v-btn elevation="0" icon @click="changeSidePanel"
+              <v-btn elevation="0" icon @click="$emit('create-new-chat')"
                 style="color: inherit; background: var(--color-background); border-radius: 8px;">
                 <v-icon color="var(--color-text)">mdi-square-edit-outline</v-icon>
                 <v-tooltip activator="parent" location="bottom">{{ newChatText }}</v-tooltip>
@@ -136,7 +136,7 @@ export default {
           Item 2
         </v-list-item>
         <v-list-item style="color: var(--color-text);">
-          Item 3
+          {{chatHistory}}
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -148,7 +148,7 @@ export default {
               <v-col sm="1" md="1" />
               <v-col>
                 <v-sheet style="background: inherit; color: inherit; width: 100%; margin-bottom: 6px;"
-                  v-for="message in chatHistory.messages">
+                  v-for="message in currentChat.messages">
                   <v-card v-if="message.role === 'user'" variant="tonal" style="width: fit-content; justify-self: end;"
                     elevation="1">
                     <v-card-text>

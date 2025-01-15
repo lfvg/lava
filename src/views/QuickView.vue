@@ -4,7 +4,7 @@ export default {
   components: {
     VueMarkdown
   },
-  props: ['chatHistory', 'queryText', 'responding'],
+  props: ['chatHistory', 'queryText', 'responding', 'currentChat'],
   data() {
     return {
       bottonResponse: null,
@@ -16,18 +16,18 @@ export default {
   },
   computed : {
     showResponse: function () { 
-      if(this.chatHistory.messages.length === 0) return false;
-      let messagesCount = this.chatHistory.messages.length;
+      if(this.currentChat.messages.length === 0) return false;
+      let messagesCount = this.currentChat.messages.length;
       
-      let lastMessageRole = this.chatHistory.messages[messagesCount-1].role;
+      let lastMessageRole = this.currentChat.messages[messagesCount-1].role;
       
       if (lastMessageRole === 'assistant') return true;
       return false;
     },
     chatResponse: function () {
-      if(this.chatHistory.messages.length < 2) return '';
-      let messagesCount = this.chatHistory.messages.length;
-      return this.chatHistory.messages[messagesCount -1].content;
+      if(this.currentChat.messages.length < 2) return '';
+      let messagesCount = this.currentChat.messages.length;
+      return this.currentChat.messages[messagesCount -1].content;
     }
   },
   watch: {
