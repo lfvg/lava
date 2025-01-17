@@ -9,7 +9,7 @@ export default {
       ],
       currentChat: {
         name: '',
-        colorCode: undefined,
+        colorCode: '',
         id: '',
         date: '',
         messages: []
@@ -21,6 +21,7 @@ export default {
   },
   mounted() {
     window.electronAPI.pushRouter((route) => {
+      console.log('chegou na rota', route);
       route === 'home' ?
         this.$router.push('/') :
         this.$router.push('/quick')
@@ -37,6 +38,8 @@ export default {
         
       }),
       window.electronAPI.pushHistory((history) => {
+        console.log('chegou no push history', history);
+
         let tempHistory = JSON.parse(history);
         this.chatHistory = tempHistory;
       })

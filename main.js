@@ -21,19 +21,23 @@ app.setLoginItemSettings({
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-var mainWindow;
+var mainWindow = null;
 var quickWindow = null;
 var tray;
 var abortController = null
-var savedHistory= {data: []}
+var savedHistory= []
 
-storage.set('chat_history', savedHistory, function(error){
-  if(error){
-    console.log(error);
-    throw error;
-  }
-  console.log('saved');
-})
+const singleInstanceLock = app.requestSingleInstanceLock();
+
+
+if (!singleInstanceLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory, additionalData) => {
+    createWindow();
+  })
+}
+
 //TODO check for remove
 storage.has('chat_history', function(erro, haskey){
   if(haskey){
@@ -66,7 +70,8 @@ const createWindow = () => {
     mainWindow.loadFile('dist/index.html')
     // Calls a function in Vue that forces a router change
     mainWindow.webContents.on('did-finish-load', function () {
-      mainWindow.webContents.send("push-router", "home")
+      mainWindow.webContents.send("push-router", "home");
+      mainWindow.webContents.send("push-history", JSON.stringify(savedHistory));
     })
   }
 const createTray = () => {
@@ -103,6 +108,11 @@ const createTray = () => {
   })
 
   // Inter proccess communication
+  ipcMain.on('request-history', (event) => {
+    console.log('request history');
+    let temp = JSON.stringify(savedHistory.data);
+    mainWindow.webContents.send("push-history", temp);
+  })
 
   ipcMain.on('query-ollama', (event, query) => {
     callLLM(query)

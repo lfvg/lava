@@ -7,5 +7,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveChat: (chatHistory) => ipcRenderer.send('save-chat', chatHistory),
   quickQueryOllama: (query) => ipcRenderer.send('quick-query-ollama', query),
   closeQuickView: () => ipcRenderer.send('close-quick-view'),
-  pushHistory: (callback) => ipcRenderer.on('push-history', (event, history) => callback(history))
+  pushHistory: (callback) => ipcRenderer.on('push-history', (event, history) => callback(history)),
+  requestHistory: () => ipcRenderer.send('request-history')
 })

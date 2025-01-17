@@ -98,7 +98,6 @@ export default {
 <template style="height: 100vh">
   <v-app style="color: var(--color-text); background: var(--color-background-soft);">
     <v-toolbar dense flat color="var(--color-text)" style="color: inherit; background: var(--color-background-soft);">
-
       <v-btn v-if="miniVariant" elevation="0" icon @click="changeSidePanel" style="border-radius: 8px;">
         <v-icon>mdi-dock-left</v-icon>
         <v-tooltip activator="parent" location="bottom">{{ sidebarOpenText }}</v-tooltip>
@@ -132,12 +131,30 @@ export default {
             </v-list-item-avatar>
           </v-row>
         </v-list-item>
-        <v-list-item style="color: var(--color-text);">
-          Item 2
+        <v-divider></v-divider>
+        <!-- <template v-slot:default="{ isHovering, props }"> -->
+        <v-list-item v-for="chat in chatHistory" style="color: var(--color-text);" :key="chat.id">
+          <v-hover v-slot="{ isHovering, props }" close-delay="200">
+            <v-row v-bind="props" no-gutters align="center" style="position: relative;">
+              <div style="width: 13px; height: 100%;">
+                <div style="width: 8px; height: 8px; border-radius: 50%; background-color: red;"></div>
+              </div>
+              <div style="width: 190px;">
+                <div class="text-no-wrap">{{ chat.name }}</div>
+              </div>
+              <div>
+                <div style="position: absolute; right: 0px; top: 0px;">
+                  <v-btn v-show="isHovering" elevation="0" density="comfortable" plain icon size="x-small"
+                    style="border-radius: 8px; background-color: var(--color-background); /*background-image: linear-gradient(to right, rgba(255,0,0,0), var(--color-background-soft));*/">
+                    <v-icon color="var(--color-text)">mdi-dots-horizontal</v-icon>
+                  </v-btn>
+                </div>
+              </div>
+            </v-row>
+          </v-hover>
         </v-list-item>
-        <v-list-item style="color: var(--color-text);">
-          {{chatHistory}}
-        </v-list-item>
+        <!-- </template> -->
+
       </v-list>
     </v-navigation-drawer>
     <v-main>
@@ -161,14 +178,11 @@ export default {
                         <div v-bind="props">
                           <vue-markdown :source="message.content" />
                           <div style="min-height: 48px;">
-                            <v-btn v-if="!responding" v-show="isHovering" @click="copyResponse(message.content)" icon flat
-                              density="comfortable" size="small" color="var(--color-background-soft)"
+                            <v-btn v-if="!responding" v-show="isHovering" @click="copyResponse(message.content)" icon
+                              flat density="comfortable" size="small" color="var(--color-background-soft)"
                               active-color="var(--color-background)">
                               <v-icon color="var(--color-text)">mdi-content-copy</v-icon>
-                              <v-tooltip
-        activator="parent"
-        location="end"
-        >{{copyText}}</v-tooltip>
+                              <v-tooltip activator="parent" location="end">{{ copyText }}</v-tooltip>
                             </v-btn>
                           </div>
                         </div>
@@ -185,13 +199,11 @@ export default {
                 <v-textarea no-resize="true" solo filled placeholder="Mensagem Llama" :rows="textareaRows"
                   v-bind:model-value="queryText" v-on:update:model-value="(event) => $emit('update-query-text', event)"
                   :disabled="responding" @click:append-inner="$emit('submit-query')"
-                  @keydown.enter.exact.prevent="$emit('submit-query')"
-                  @keydown.enter.shift.exact.prevent="() => $emit('update-query-text-with-enter')">
+                  @keydown.enter.exact.prevent="$emit('submit-query')">
                   <template v-slot:append-inner>
                     <v-icon style="align-self: center" icon="mdi-send" v-on:click="$emit('submit-query')" />
                   </template>
                 </v-textarea>
-
               </v-col>
               <v-col sm="1" md="1" />
             </v-row>
@@ -225,5 +237,27 @@ body {
 body {
   background: black;
   overflow: hidden;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.5);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  width: 4px;
+  height: 4px;
+  background-color: #3498db;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
 }
 </style>
