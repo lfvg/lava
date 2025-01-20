@@ -64,6 +64,14 @@ export default {
 
   },
   methods: {
+    calculateHistoryItemColorCode(color) {
+      return {
+        width: '8px',
+        height: '8px',
+        'border-radius': '50%',
+        'background-color': color
+      }
+    },
     makeQuery() {
 
     },
@@ -137,16 +145,45 @@ export default {
           <v-hover v-slot="{ isHovering, props }" close-delay="200">
             <v-row v-bind="props" no-gutters align="center" style="position: relative;">
               <div style="width: 13px; height: 100%;">
-                <div style="width: 8px; height: 8px; border-radius: 50%; background-color: red;"></div>
+                <div v-if="chat.colorCode != ''" :style="calculateHistoryItemColorCode(chat.colorCode)"></div>
               </div>
               <div style="width: 190px;">
                 <div class="text-no-wrap">{{ chat.name }}</div>
               </div>
               <div>
                 <div style="position: absolute; right: 0px; top: 0px;">
-                  <v-btn v-show="isHovering" elevation="0" density="comfortable" plain icon size="x-small"
+                  <v-btn v-if="isHovering" elevation="0" density="comfortable" plain icon size="x-small"
                     style="border-radius: 8px; background-color: var(--color-background); /*background-image: linear-gradient(to right, rgba(255,0,0,0), var(--color-background-soft));*/">
                     <v-icon color="var(--color-text)">mdi-dots-horizontal</v-icon>
+                    <v-menu  v-bind="props" activator="parent">
+                      <v-list style="color: var(--color-text); background-color: var(--color-background-mute) ;">
+                        <v-list-item>
+                          <v-list-item-title @click="console.log('excluir: ', chat.id)" style="cursor: pointer;">Renomear</v-list-item-title>
+                        </v-list-item>
+                        <v-divider></v-divider>                        
+                        <div class="text-caption" style="margin-left: 6px; margin-top: 6px;">Etiquetas</div>
+                        <v-list-item>
+                          <v-row aligne="center">
+                            <v-col style="cursor: pointer;" >
+                              <div style="border-radius: 50%; background-color: red; width: 12px; height: 12px;"></div>
+                            </v-col>
+                            <v-col style="cursor: pointer;">
+                              <div style="border-radius: 50%; background-color: green; width: 12px; height: 12px;"></div>
+                            </v-col>
+                            <v-col style="cursor: pointer;">
+                              <div style="border-radius: 50%; background-color: blue; width: 12px; height: 12px;"></div>
+                            </v-col>
+                            <v-col style="cursor: pointer;">
+                              <div style="color: var(--color-text); width: 12px; height: 12px; margin-top: -6px">⊗</div>
+                            </v-col>
+                          </v-row>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                                                <v-list-item>
+                          <v-list-item-title @click="console.log('excluir: ', chat.id)" style="cursor: pointer;">Excluir</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </v-btn>
                 </div>
               </div>
