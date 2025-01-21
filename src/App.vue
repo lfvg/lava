@@ -101,6 +101,16 @@ export default {
         date: '',
         messages: []
       }
+    },
+    onLoadChatEntry(id) {
+      console.log('chegou no load entry',  id);
+      let temp = this.chatHistory.find(function (entry){
+        return entry.id === id;
+      });
+      console.log('chegou no load entry',  temp);
+      temp = JSON.parse(JSON.stringify(temp));
+      this.currentChat = temp;
+      console.log('chegou no load entry',  this.currentChat);
     }
   }
 }
@@ -110,7 +120,8 @@ export default {
   <RouterView v-slot="{ Component }">
     <component :is="Component" :responseText="responseText" :chatHistory="chatHistory" :currentChat="currentChat" :queryText="queryText" :responding="responding"
       @submit-query="makeQuery" @update-query-text="updateQuery" @update-query-text-with-enter="updateQueryWithEnter" 
-      @submit-quick-query="makeQuickQuery" @close-quick-view="onCloseQuickView" @create-new-chat="handleCreateNewChat"/>
+      @submit-quick-query="makeQuickQuery" @close-quick-view="onCloseQuickView" @create-new-chat="handleCreateNewChat"
+      @load-chat-entry="onLoadChatEntry"/>
   </RouterView>
 </template>
 <style></style>

@@ -180,7 +180,13 @@ export default {
         </v-list-item>
         <v-divider></v-divider>
         <!-- <template v-slot:default="{ isHovering, props }"> -->
-        <v-list-item v-for="chat in chatHistory" style="color: var(--color-text);" :key="chat.id">
+        <v-list-item @click="$emit('load-chat-entry', chat.id)" v-for="chat in chatHistory" :key="chat.id" style="
+       
+         position: relative;
+          cursor: pointer;
+          color: var(--color-text);
+         
+        ">
           <v-hover v-slot="{ isHovering, props }" close-delay="200">
             <v-row v-bind="props" no-gutters align="center" style="position: relative;">
               <div style="width: 13px; height: 100%;">
