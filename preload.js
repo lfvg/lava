@@ -8,5 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   quickQueryOllama: (query) => ipcRenderer.send('quick-query-ollama', query),
   closeQuickView: () => ipcRenderer.send('close-quick-view'),
   pushHistory: (callback) => ipcRenderer.on('push-history', (event, history) => callback(history)),
-  requestHistory: () => ipcRenderer.send('request-history')
+  requestHistory: () => ipcRenderer.send('request-history'),
+  deleteHistoryEntry: (id) => ipcRenderer.send('delete-history-entry', id),
+  changeColorCodeOfHistoryEntry: (data) => ipcRenderer.send('change-color-code-of-history-entry', data)
 })

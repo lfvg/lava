@@ -1,11 +1,17 @@
 <script>
 import VueMarkdown from 'vue-markdown-render';
+import { useGoTo } from 'vuetify'
+
 
 export default {
+  setup () {
+      const goTo = useGoTo()
+      return { goTo }
+    },
   components: {
     VueMarkdown
   },
-  props: ['chatHistory', 'queryText', 'responding', 'currentChat'],
+  props: ['chatHistory', 'queryText', 'responding', 'currentChat', 'responseText'],
   data() {
     return {
       miniVariant: true,
@@ -82,6 +88,13 @@ export default {
     },
     copyResponse(message) {
       navigator.clipboard.writeText(message);
+    },
+    deleteHistoryEntry(id) {
+      window.electronAPI.deleteHistoryEntry(id);
+    },
+    selectHistoryEntryColorCode(id, color) {
+      let data = JSON.stringify({id: id, color: color});
+      window.electronAPI.changeColorCodeOfHistoryEntry(data);
     }
   },
   watch: {
@@ -98,8 +111,34 @@ export default {
       },
       immediate: true,
     },
-  },
+    responseText(newValue, oldValue) {
+      console.log('chegou no watch do current chat');
+      this.$nextTick(() => {
+        const elem = document.getElementById("chat");
+        let children = elem.children;
+        let height = 0;
+        for(const child of children) {
+          console.log('height: ', child.offsetHeight);
+          height += child.offsetHeight;
+        }
+        
+        console.log('Height: ', height);
+        
+      if (elem) {
+        // Check if the container has content and is scrollable
+        if (height > elem.clientHeight) {
+          elem.scrollTop = height;
+          console.log("Scrolled to bottom");
+        } else {
+          console.warn("Container not scrollable or has no overflow content");
+        }
+      } else {
+        console.error("chatContainer ref not found");
+      }
+    });
+    },
 
+  },
 }
 </script>
 
@@ -160,27 +199,27 @@ export default {
                         <v-list-item>
                           <v-list-item-title @click="console.log('excluir: ', chat.id)" style="cursor: pointer;">Renomear</v-list-item-title>
                         </v-list-item>
-                        <v-divider></v-divider>                        
-                        <div class="text-caption" style="margin-left: 6px; margin-top: 6px;">Etiquetas</div>
+                        <v-divider style="margin-left: 8px; margin-right: 8px;"></v-divider>                        
+                        <div class="text-caption" style="margin-left: 16px; margin-top: 6px;">Etiquetas</div>
                         <v-list-item>
                           <v-row aligne="center">
-                            <v-col style="cursor: pointer;" >
-                              <div style="border-radius: 50%; background-color: red; width: 12px; height: 12px;"></div>
+                            <v-col @click="selectHistoryEntryColorCode(chat.id, 'tomato')" style="cursor: pointer;" >
+                              <div style="border-radius: 50%; background-color: tomato; width: 12px; height: 12px;"></div>
                             </v-col>
-                            <v-col style="cursor: pointer;">
-                              <div style="border-radius: 50%; background-color: green; width: 12px; height: 12px;"></div>
+                            <v-col @click="selectHistoryEntryColorCode(chat.id, 'gold')" style="cursor: pointer;">
+                              <div style="border-radius: 50%; background-color: gold; width: 12px; height: 12px;"></div>
                             </v-col>
-                            <v-col style="cursor: pointer;">
-                              <div style="border-radius: 50%; background-color: blue; width: 12px; height: 12px;"></div>
+                            <v-col @click="selectHistoryEntryColorCode(chat.id, 'limegreen')" style="cursor: pointer;">
+                              <div style="border-radius: 50%; background-color: limegreen; width: 12px; height: 12px;"></div>
                             </v-col>
-                            <v-col style="cursor: pointer;">
+                            <v-col @click="selectHistoryEntryColorCode(chat.id, '')" style="cursor: pointer;">
                               <div style="color: var(--color-text); width: 12px; height: 12px; margin-top: -6px">⊗</div>
                             </v-col>
                           </v-row>
                         </v-list-item>
-                        <v-divider></v-divider>
+                        <v-divider style="margin-left: 8px; margin-right: 8px;"></v-divider>
                                                 <v-list-item>
-                          <v-list-item-title @click="console.log('excluir: ', chat.id)" style="cursor: pointer;">Excluir</v-list-item-title>
+                          <v-list-item-title @click="deleteHistoryEntry(chat.id)" style="cursor: pointer;">Excluir</v-list-item-title>
                         </v-list-item>
                       </v-list>
                     </v-menu>
@@ -197,10 +236,10 @@ export default {
     <v-main>
       <v-container fluid style="height: 100%">
         <v-row style="height: 100%;">
-          <v-col>
+          <v-col style="overflow-y: scroll;">
             <v-row :style="textAreaStyle">
               <v-col sm="1" md="1" />
-              <v-col>
+              <v-col id="chat" ref="chatContainer" style="height: 100%; overflow-y: auto;">
                 <v-sheet style="background: inherit; color: inherit; width: 100%; margin-bottom: 6px;"
                   v-for="message in currentChat.messages">
                   <v-card v-if="message.role === 'user'" variant="tonal" style="width: fit-content; justify-self: end;"
@@ -227,6 +266,7 @@ export default {
                     </v-hover>
                   </div>
                 </v-sheet>
+                <!-- <div id="end"></div> -->
               </v-col>
               <v-col sm="1" md="1" />
             </v-row>

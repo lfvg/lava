@@ -41,16 +41,13 @@ if (!singleInstanceLock) {
 //TODO check for remove
 storage.has('chat_history', function(erro, haskey){
   if(haskey){
-    console.log('has key');
     storage.get('chat_history', function(error, data) {
       if(error) throw error;
       savedHistory = data.data;
-      console.log('data read', savedHistory);
     });
   }
   else {
-  console.log('no key');
-}
+  }
 });
 
 // Electron functions
@@ -109,7 +106,6 @@ const createTray = () => {
 
   // Inter proccess communication
   ipcMain.on('request-history', (event) => {
-    console.log('request history');
     let temp = JSON.stringify(savedHistory.data);
     mainWindow.webContents.send("push-history", temp);
   })
@@ -130,16 +126,8 @@ const createTray = () => {
     else { 
       savedHistory[indexInHistory] = currentChat;
     }
-    storage.set('chat_history', {data: savedHistory}, function(error){
-      if(error){
-        console.log(error);
-        throw error;
-      }
-      console.log('saved');
-    })
-    let temp = JSON.stringify(savedHistory);
-    console.log(temp);
-    mainWindow.webContents.send("push-history", temp);
+    storeHistory(savedHistory);
+    pushHistory(savedHistory);
   })
 
   ipcMain.on('quick-query-ollama', (event, query) => {
@@ -151,8 +139,38 @@ const createTray = () => {
     quickWindow.close();
     quickWindow = null;
   })
+
+  ipcMain.on('delete-history-entry', (event, id) => {
+    savedHistory = savedHistory.filter(function (element){
+      return element.id != id;
+    })
+    storeHistory(savedHistory);
+    pushHistory(savedHistory);
+  })
+
+  ipcMain.on('change-color-code-of-history-entry', (event, data) => {
+    let objData = JSON.parse(data);
+    let indexInHistory = savedHistory.findIndex(function(element){
+      return element.id === objData.id;
+    })
+    savedHistory[indexInHistory].colorCode = objData.color;
+    storeHistory(savedHistory);
+    pushHistory(savedHistory);
+  })
   // General functions
 
+  const storeHistory = (history) =>  {
+    storage.set('chat_history', {data: history}, function(error){
+      if(error){
+        throw error;
+      }
+    })
+  }
+
+  const pushHistory = (history) => {
+    let temp = JSON.stringify(history);
+    mainWindow.webContents.send("push-history", temp);
+  } 
 
   const handleQuickPage = () => {
     if(quickWindow === null) {
@@ -239,7 +257,6 @@ const createTray = () => {
       const stream = response.data
       stream.on('data', data => {
         data = data.toString()
-        //console.log(data);
         if (quickWindow != null) {
           quickWindow.webContents.send("ollama-response", data)
         }

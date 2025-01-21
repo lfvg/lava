@@ -16,12 +16,12 @@ export default {
       },
       queryText: "",
       responding: false,
-      finishQuery: true
+      finishQuery: true,
+      responseText: ""
     }
   },
   mounted() {
     window.electronAPI.pushRouter((route) => {
-      console.log('chegou na rota', route);
       route === 'home' ?
         this.$router.push('/') :
         this.$router.push('/quick')
@@ -32,14 +32,16 @@ export default {
           this.responding = false;
           let sChatHisotry = JSON.stringify(this.currentChat);
           window.electronAPI.saveChat(sChatHisotry)
+          this.responseText = "";
         }
-        else
+        else {
           this.currentChat.messages[this.currentChat.messages.length - 1].content += parsedData.message.content;
+          this.responseText = this.responseText + parsedData.message.content;
+        }
+        
         
       }),
       window.electronAPI.pushHistory((history) => {
-        console.log('chegou no push history', history);
-
         let tempHistory = JSON.parse(history);
         this.chatHistory = tempHistory;
       })
@@ -106,7 +108,7 @@ export default {
 
 <template>
   <RouterView v-slot="{ Component }">
-    <component :is="Component" :chatHistory="chatHistory" :currentChat="currentChat" :queryText="queryText" :responding="responding"
+    <component :is="Component" :responseText="responseText" :chatHistory="chatHistory" :currentChat="currentChat" :queryText="queryText" :responding="responding"
       @submit-query="makeQuery" @update-query-text="updateQuery" @update-query-text-with-enter="updateQueryWithEnter" 
       @submit-quick-query="makeQuickQuery" @close-quick-view="onCloseQuickView" @create-new-chat="handleCreateNewChat"/>
   </RouterView>
