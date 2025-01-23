@@ -245,7 +245,7 @@ export default {
           <v-col style="overflow-y: scroll;">
             <v-row :style="textAreaStyle">
               <v-col sm="1" md="1" />
-              <v-col id="chat" ref="chatContainer" style="height: 100%; overflow-y: auto;">
+              <v-col id="chat" ref="chatContainer" style="height: 100%; overflow-y: auto; padding-left: 32px; padding-right: 32px;">
                 <v-sheet style="background: inherit; color: inherit; width: 100%; margin-bottom: 6px;"
                   v-for="message in currentChat.messages">
                   <v-card v-if="message.role === 'user'" variant="tonal" style="width: fit-content; justify-self: end;"

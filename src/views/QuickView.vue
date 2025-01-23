@@ -33,7 +33,24 @@ export default {
   watch: {
     chatResponse() {
       this.$nextTick(() => {
-        this.goTo(this.bottonResponse.$el);
+        const elem = document.getElementById("chat");
+        let children = elem.children;
+        let height = 0;
+        for(const child of children) {
+          console.log('height: ', child.offsetHeight);
+          height += child.offsetHeight;
+        }
+        if (elem) {
+        // Check if the container has content and is scrollable
+        if (height > elem.clientHeight) {
+          elem.scrollTop = height;
+          console.log("Scrolled to bottom");
+        } else {
+          console.warn("Container not scrollable or has no overflow content");
+        }
+      } else {
+        console.error("chatContainer ref not found");
+      }
       })
     }
   },
@@ -60,12 +77,11 @@ export default {
   </v-container>
   <v-hover close-delay="200">
     <template v-slot:default="{ isHovering, props }">
-        <v-sheet ref="scrollContainer" v-bind="props" v-if="showResponse" style="margin-top: 32px; height: fit-content; max-height: 400px; overflow: scroll; border-radius: 5px; background: var(--color-background); color: var(--color-text); padding: 32px;">
+        <v-sheet id="chat" ref="scrollContainer" v-bind="props" v-if="showResponse" style="margin-top: 32px; height: fit-content; max-height: 400px; overflow: scroll; border-radius: 5px; background: var(--color-background); color: var(--color-text); padding: 32px;">
           <v-btn v-show="isHovering" @click="copyResponse"  icon flat density="comfortable" size="small" color="var(--color-background)" active-color="var(--color-background)" style="position: absolute; top: 136px; right: 8px;">
             <v-icon color="var(--color-text)">mdi-content-copy</v-icon>
           </v-btn>
           <vue-markdown :source="chatResponse" />
-          <div :ref="instance => bottonResponse = instance"></div>
         </v-sheet>
    
     </template>
