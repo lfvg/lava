@@ -10,7 +10,7 @@ import {v4 as uuidv4} from 'uuid';
 import  storage  from 'electron-json-storage';
 
 //Set empty menu, prevent access to developer tools
-//Menu.setApplicationMenu(new Menu);
+Menu.setApplicationMenu(new Menu);
 
 //App auto launch configuration
 app.setLoginItemSettings({
