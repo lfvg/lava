@@ -11,7 +11,7 @@ export default {
   components: {
     VueMarkdown
   },
-  props: ['chatHistory', 'queryText', 'responding', 'currentChat', 'responseText'],
+  props: ['chatHistory', 'queryText', 'responding', 'currentChat', 'responseText', 'alert', 'alertControll'],
   data() {
     return {
       miniVariant: true,
@@ -20,25 +20,32 @@ export default {
       copyText: 'Copiar resposta',
       sidebarCloseText: 'Fechar a barra lateral',
       sidebarOpenText: 'Abrir a barra lateral',
-      newChatText: 'Novo chat'
+      newChatText: 'Novo chat',
+      messageArea: 102 //78 170
     }
   },
   computed: {
+    //todo mudar aqui
     textareaHeigth: function () {
+      // elem = document.getElementById("message-area");
       const lines = this.queryText.split('\n').length;
-      var height = 0;
-      switch (lines) {
-        case 0:
-        case 1:
-          height = 174;
-          break;
-        case 2:
-          height = 198;
-          break;
-        default:
-          height = 224;
-          break;
-      }
+      //92
+      //var height = this.alert.controll ? 84 : 0;
+      var height = this.messageArea + 72;
+      // let alertSize  = this.alert.contr
+      // switch (lines) {
+      //   case 0:
+      //   case 1:
+      //     height += 174; //258
+      //     break;
+      //   case 2:
+      //     height += 198;
+      //     break;
+      //   default:
+      //     height += 224;
+      //     break;
+      // }
+      console.log('height computed', height);
       return height;
     },
     textareaRows: function () {
@@ -70,6 +77,14 @@ export default {
 
   },
   methods: {
+    onCloseAlert(){
+      if(!this.alert.controll) this.messageArea = this.messageArea - 108;
+    },
+    calculateMessageArea(){
+      this.$nextTick(()=>{
+      
+      });
+    },
     calculateHistoryItemColorCode(color) {
       return {
         width: '8px',
@@ -82,7 +97,6 @@ export default {
 
     },
     changeSidePanel() {
-
       this.miniVariant = !this.miniVariant;
       this.permanent = !this.permanent;
     },
@@ -112,23 +126,19 @@ export default {
       immediate: true,
     },
     responseText(newValue, oldValue) {
-      console.log('chegou no watch do current chat');
       this.$nextTick(() => {
         const elem = document.getElementById("chat");
         let children = elem.children;
         let height = 0;
         for(const child of children) {
-          console.log('height: ', child.offsetHeight);
           height += child.offsetHeight;
         }
         
-        console.log('Height: ', height);
         
       if (elem) {
         // Check if the container has content and is scrollable
         if (height > elem.clientHeight) {
           elem.scrollTop = height;
-          console.log("Scrolled to bottom");
         } else {
           console.warn("Container not scrollable or has no overflow content");
         }
@@ -137,6 +147,42 @@ export default {
       }
     });
     },
+    queryText(newValue, oldValue) {
+      this.$nextTick(()=>{
+        const elem = document.getElementById("message-area");
+        //let children = elem.children;
+        let height = elem.clientHeight;
+        // for(const child of children) {
+        //   height += child.offsetHeight;
+        // }
+        console.log('message-area query', height);
+        this.messageArea = height;
+      });
+    },
+    alertControll(newValue, oldValue) {
+      this.$nextTick(()=>{
+        const elem = document.getElementById("message-area");
+        //let children = elem.children;
+        let height = elem.clientHeight;
+        // for(const child of children) {
+        //   height += child.offsetHeight;
+        // }
+        console.log('message-area alert', height);
+        this.messageArea = height;
+      });
+    },
+    responding(newValue, oldValue) {
+      this.$nextTick(()=>{
+        const elem = document.getElementById("message-area");
+        //let children = elem.children;
+        let height = elem.clientHeight;
+        // for(const child of children) {
+        //   height += child.offsetHeight;
+        // }
+        console.log('message-area alert', height);
+        this.messageArea = height;
+      });
+    }
 
   },
 }
@@ -272,14 +318,41 @@ export default {
                     </v-hover>
                   </div>
                 </v-sheet>
-                <!-- <div id="end"></div> -->
               </v-col>
               <v-col sm="1" md="1" />
             </v-row>
             <v-row style="background: var(--color-background-soft); color: var(--color-text);">
               <v-col sm="1" md="1" />
-              <v-col>
-                <v-textarea no-resize="true" solo filled placeholder="Mensagem Llama" :rows="textareaRows"
+              <v-col id="message-area">
+                <v-alert @click:close="$emit('close-alert')" v-model="alert.controll" :type="alert.type"  density="compact" :text="alert.message" :title="alert.title" closable style="margin-bottom: 16px;">
+                </v-alert>
+                <div v-if="responding" style="position: relative; height: 174px; width: 100%; display: flex; justify-content: center; align-items: center;">
+                  <div style="position: relative; width: 174px; height: 174px;">
+                  <div class="pulse2" style="top: 49.8px; left: 13.1px;"></div>
+                  <div class="pulse2" style="top: 92.6px; left: 39.8px;"></div>
+                  <div class="pulse2" style="top: 50.4px; left: 60.6px;"></div>
+                  <div class="pulse2" style="top: 108.9px; left: 64.4px;"></div>
+                  <div class="pulse3" style="top: 97.17px; left: 86.8px;"></div>
+                  <div class="pulse" style="top: 81px; left: 102px;"></div>
+                  <div class="pulse" style="top: 8.3px; left: 62.75px"></div>
+                  <div class="pulse2" style="top: 23px; left: 91.89px;"></div>
+
+                  <div class="pulse" style="top: 75.5px; left: 60.8px;"></div>
+                  <div class="pulse" style="top: 59.8px; left: 34.7px;"></div>
+                  <div class="pulse2" style="top: 15.64px; left: 24.78px;"></div>
+
+                  <div class="pulse" style="top: 81.4px; left: 102.1px;"></div>
+
+                  <div class="pulse3" style="top: 56.55px; left: 77.63px;"></div>
+
+                  <div class="pulse3" style="top: 47.82px; left: 99.3px;"></div>
+                  <div class="pulse" style="top: 32.62px; left: 56.73px;"></div>
+                  <div class="pulse3" style="top: 70.38px; left: 22.5px;"></div>
+                  <div class="pulse2" style="top: 98.53px; left: 21.19px;"></div>
+
+                </div>
+                </div>
+                <v-textarea v-else no-resize="true" solo filled placeholder="Mensagem Llama" :rows="textareaRows"
                   v-bind:model-value="queryText" v-on:update:model-value="(event) => $emit('update-query-text', event)"
                   :disabled="responding" @click:append-inner="$emit('submit-query')"
                   @keydown.enter.exact.prevent="$emit('submit-query')">
@@ -337,10 +410,39 @@ body {
 }
 
 .pulse {
+  position: absolute;
   width: 4px;
   height: 4px;
-  background-color: #3498db;
+  background-color: var(--color-text);
   border-radius: 50%;
-  animation: pulse 2s infinite;
+  animation: pulse 1s infinite;
+}
+.pulse2 {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-text);
+  border-radius: 50%;
+  animation: pulse 3s infinite;
+}
+.pulse3 {
+  position: absolute;
+  top: 33%;
+  left: 10%;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-text);
+  border-radius: 50%;
+  animation: pulse 4s infinite;
+}
+.pulse4 {
+  position: absolute;
+  top: 33%;
+  left: 80%;
+  width: 4px;
+  height: 4px;
+  background-color: var(--color-text);
+  border-radius: 50%;
+  animation: pulse 4s infinite;
 }
 </style>

@@ -17,7 +17,14 @@ export default {
       queryText: "",
       responding: false,
       finishQuery: true,
-      responseText: ""
+      responseText: "",
+      alertControll: false,
+      alert: {
+        controll: false,
+        message: '',
+        type: 'error',
+        title: ''
+      }
     }
   },
   mounted() {
@@ -44,6 +51,12 @@ export default {
       window.electronAPI.pushHistory((history) => {
         let tempHistory = JSON.parse(history);
         this.chatHistory = tempHistory;
+      }),
+      window.electronAPI.pushAlert((newAlert) => {
+        console.log(newAlert);
+        let alertParsed = JSON.parse(newAlert);
+        this.alert = alertParsed;
+        this.alertControll = alertParsed.controll;
       })
   },
   computed: {
@@ -111,6 +124,9 @@ export default {
       temp = JSON.parse(JSON.stringify(temp));
       this.currentChat = temp;
       console.log('chegou no load entry',  this.currentChat);
+    },
+    onCloseAlert() {
+      this.alertControll = false;
     }
   }
 }
@@ -118,10 +134,11 @@ export default {
 
 <template>
   <RouterView v-slot="{ Component }">
-    <component :is="Component" :responseText="responseText" :chatHistory="chatHistory" :currentChat="currentChat" :queryText="queryText" :responding="responding"
+    <component :is="Component" :responseText="responseText" :chatHistory="chatHistory" :currentChat="currentChat" 
+      :queryText="queryText" :responding="responding" :alert="alert" :alertControll="alertControll"
       @submit-query="makeQuery" @update-query-text="updateQuery" @update-query-text-with-enter="updateQueryWithEnter" 
       @submit-quick-query="makeQuickQuery" @close-quick-view="onCloseQuickView" @create-new-chat="handleCreateNewChat"
-      @load-chat-entry="onLoadChatEntry"/>
+      @load-chat-entry="onLoadChatEntry" @close-alert="onCloseAlert"/>
   </RouterView>
 </template>
 <style></style>

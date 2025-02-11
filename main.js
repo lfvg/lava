@@ -10,7 +10,7 @@ import {v4 as uuidv4} from 'uuid';
 import  storage  from 'electron-json-storage';
 
 //Set empty menu, prevent access to developer tools
-Menu.setApplicationMenu(new Menu);
+//Menu.setApplicationMenu(new Menu);
 
 //App auto launch configuration
 app.setLoginItemSettings({
@@ -172,6 +172,11 @@ const createTray = () => {
     mainWindow.webContents.send("push-history", temp);
   } 
 
+  const pushAlert = (alert) => {
+    let alertStigfy = JSON.stringify(alert);
+    mainWindow.webContents.send("alert", alertStigfy);
+  }
+
   const handleQuickPage = () => {
     if(quickWindow === null) {
       //getCursorScreenPoint is broken on linux
@@ -226,7 +231,15 @@ const createTray = () => {
     }, {
       responseType: 'stream'
     }).catch(function (error){
+      console.log(error)
       querySuccess = false;
+      let alert = {
+        controll: true,
+        message: 'Parece que você não possui memória suficiente para a IA funcionar. Feche alguns programas e tente novmente :\'(',
+        type: 'error',
+        title: 'Algo deu errado'
+      };
+      pushAlert(alert);
     })
 
     if(querySuccess) {

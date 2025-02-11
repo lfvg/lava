@@ -7,8 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveChat: (chatHistory) => ipcRenderer.send('save-chat', chatHistory),
   quickQueryOllama: (query) => ipcRenderer.send('quick-query-ollama', query),
   closeQuickView: () => ipcRenderer.send('close-quick-view'),
-  pushHistory: (callback) => ipcRenderer.on('push-history', (event, history) => callback(history)),
+  pushHistory: (callback) => ipcRenderer.on('push-history', (_event, history) => callback(history)),
   requestHistory: () => ipcRenderer.send('request-history'),
   deleteHistoryEntry: (id) => ipcRenderer.send('delete-history-entry', id),
-  changeColorCodeOfHistoryEntry: (data) => ipcRenderer.send('change-color-code-of-history-entry', data)
+  changeColorCodeOfHistoryEntry: (data) => ipcRenderer.send('change-color-code-of-history-entry', data),
+  pushAlert: (callback) => ipcRenderer.on('alert', (_event, alert) => callback(alert))
 })
