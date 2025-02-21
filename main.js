@@ -25,6 +25,7 @@ var mainWindow = null;
 var quickWindow = null;
 var tray;
 var abortController = null
+var homeAbortController = null
 var savedHistory= []
 
 const singleInstanceLock = app.requestSingleInstanceLock();
@@ -105,6 +106,13 @@ const createTray = () => {
   })
 
   // Inter proccess communication
+  ipcMain.on('stop-query', (event) => {
+    homeAbortController.abort();
+    homeAbortController = null;
+    //TODO emit abort
+    pushStopSuccess('true');
+  })
+
   ipcMain.on('request-history', (event) => {
     let temp = JSON.stringify(savedHistory.data);
     mainWindow.webContents.send("push-history", temp);
@@ -225,11 +233,13 @@ const createTray = () => {
   const callLLM = async (query) => {
     var querySuccess = true;
     let messages = JSON.parse(query);
+    homeAbortController = new AbortController();
     const response = await axios.post("http://localhost:11434/api/chat", {
       model: "llama3.2",
       messages: messages
     }, {
-      responseType: 'stream'
+      responseType: 'stream',
+      signal: homeAbortController.signal,
     }).catch(function (error){
       console.log(error)
       querySuccess = false;
@@ -248,6 +258,13 @@ const createTray = () => {
         data = data.toString()
         mainWindow.webContents.send("ollama-response", data)
       })
+      // let alert = {
+      //   controll: true,
+      //   message: 'Parece que você não possui memória suficiente para a IA funcionar. Feche alguns programas e tente novmente :\'(',
+      //   type: 'error',
+      //   title: 'Algo deu errado'
+      // };
+      // pushAlert(alert);
     }
   }
 

@@ -11,5 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   requestHistory: () => ipcRenderer.send('request-history'),
   deleteHistoryEntry: (id) => ipcRenderer.send('delete-history-entry', id),
   changeColorCodeOfHistoryEntry: (data) => ipcRenderer.send('change-color-code-of-history-entry', data),
-  pushAlert: (callback) => ipcRenderer.on('alert', (_event, alert) => callback(alert))
+  pushAlert: (callback) => ipcRenderer.on('alert', (_event, alert) => callback(alert)),
+  stopQuery: () => ipcRenderer.send("stop-query"),
+  pushStopSuccess: (callback) => ipcRenderer.on('push-stop-success', (_event, data) => callback(data))
 })

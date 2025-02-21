@@ -57,6 +57,12 @@ export default {
         let alertParsed = JSON.parse(newAlert);
         this.alert = alertParsed;
         this.alertControll = alertParsed.controll;
+      }),
+      window.electronAPI.pushStopSuccess((stop) => {
+        this.responding = false;
+        let sChatHisotry = JSON.stringify(this.currentChat);
+        window.electronAPI.saveChat(sChatHisotry)
+        this.responseText = "";
       })
   },
   computed: {
@@ -127,6 +133,9 @@ export default {
     },
     onCloseAlert() {
       this.alertControll = false;
+    },
+    onStopQuery() {
+      window.electronAPI.stopQuery()
     }
   }
 }
@@ -138,7 +147,7 @@ export default {
       :queryText="queryText" :responding="responding" :alert="alert" :alertControll="alertControll"
       @submit-query="makeQuery" @update-query-text="updateQuery" @update-query-text-with-enter="updateQueryWithEnter" 
       @submit-quick-query="makeQuickQuery" @close-quick-view="onCloseQuickView" @create-new-chat="handleCreateNewChat"
-      @load-chat-entry="onLoadChatEntry" @close-alert="onCloseAlert"/>
+      @load-chat-entry="onLoadChatEntry" @close-alert="onCloseAlert" @stop-query="onStopQuery"/>
   </RouterView>
 </template>
 <style></style>
