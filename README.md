@@ -1,14 +1,10 @@
-# vlama
+# Lava
 
-This template should help get you started developing with Vue 3 in Vite.
+Lava is a UI client for Ollama built with [Electron.js](https://www.electronjs.org) and [Vue.js](https://vuejs.org) + [Vuetify](https://vuetifyjs.com/en/).
 
-## Recommended IDE Setup
+By now it is hardcoded configure to run only Llama 3.2 3B.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+This project was first developed using the **eXtreme Go Horse** methodologi. Things may still be messy.
 
 ## Project Setup
 
@@ -16,14 +12,14 @@ See [Vite Configuration Reference](https://vite.dev/config/).
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Run the project
 
 ```sh
-npm run dev
+npm run build
 ```
 
 ### Compile and Minify for Production
 
 ```sh
-npm run build
+npm run make
 ```
